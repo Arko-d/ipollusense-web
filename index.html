@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
+    <!--Dynamically add Bootstrap stylesheets-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    <!-- Loading the fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat|Readex+Pro|Carme">
+
+    <!-- Adding icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+
+    <title>ipollusense</title>
+    <link rel="icon" type="image/x-icon" href="cloud.png">
+</head>
+
+<body style="background-color: azure; font-family: 'Carme'; height:100%; overflow-y: scroll;">
+    <!--Importing Bootstrap JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+
+    <div class="mb-5 py-2 text-center width-100 fs-1 fw-bold sticky-top shadow text-white"
+        style="background-color: rgb(38, 134, 167);">
+        <span class="float-start ms-2"><img src="cllg_logo.png" width="50vw" height="50vw"></span>
+        iPolluSense<span><button class="btn" onclick="restartUI(0);"><i
+                    class="fa fa-refresh text-white"></i></button></span>
+        <span class="float-end fs-1"><button class="btn" data-bs-toggle="modal" data-bs-target="#videoModal"><i
+                    class="fa fa-info-circle fs-1 me-2 text-white "></i></button></span>
+        <!-- <div>
+            <span><button class="btn btn-outline-primary" onclick="createAnnotationModal()" data-bs-toggle="modal"
+                    data-bs-target="#annotationModal">Currently Annotating: AC Room </button></span>
+            <span><button class="btn" onclick="console.log('TBD')"><i class="fa fa-play"></i></button></span>
+            <span><button class="btn" onclick="console.log('TBD')"><i class="fa fa-stop"></i></button></span>
+        </div> -->
+    </div>
+    <!-- <div class="m-0 py-2 card card-body bg-success-subtle mb-4">
+        <div class="container-fluid ps-0 py-2"><span class="fs-4 fw-bold" id="livepoltitle">Current Pollution Station
+                Data</span><span><button class="btn d-none" onclick="locationOperation()" id="livepolrefresh">
+                    <i class="fa fa-refresh"></i></button></span><span id="livepollution" class="container-fluid">
+                <span onclick="locationOperation()" class="my-0 justify-content-center btn btn-secondary">Fetch Data
+                </span>
+            </span>
+        </div> -->
+
+
+
+    </div>
+    <div class="row m-0">
+
+
+        <div class="col col-md-5 col-12 mt-5">
+            <h2 class="text-center fw-bold text-secondary">Your Air Pollution Exposure</h2>
+            <br><br>
+            <canvas id="pollution-chart"></canvas>
+
+            <button class="btn btn-primary mt-5 mb-2" onclick=updateIsGas()>Change Pollutant</button>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="autorefresh">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Auto Refresh</label>
+                <button class="btn btn-primary float-end" id="moreButton"><i class='fa fa-arrow-right'></i></button>
+            </div>
+        </div>
+
+        <div class="col col-md-7 col-12" style="overflow-y: scroll;height: 68vh;">
+            <h2 class="text-center fw-bold text-secondary">Details</h2>
+            <div class="d-flex justify-content-center" id="loading">
+                <div class="spinner-border"></div>
+            </div>
+            <div class="m-5" id="dataview-space">
+            </div>
+        </div>
+        <div class="container-fluid d-flex pt-3 pb-0 justify-content-center">Made with <span><i class="mx-2 fa fa-heart"
+                    style="color: coral;"></i></span> by NIT Durgapur</div>
+    </div>
+    </div>
+    </div>
+    <div class="modal fade" id="annotationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Annotation Parameters</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    <div class="mt-0 fs-4">Activity</div>
+                    <div id="activity_div">
+                    </div>
+                    <div class="mt-5 fs-4">Location</div>
+                    <div id="location_div">
+                    </div>
+                    <div class="mt-5 fs-4">State</div>
+                    <div id="state_div">
+                    </div>
+                    <!-- <div class="mt-5 fs-4">Extra Sensors (For current device)</div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="imu">
+                        <label class="form-check-label" for="imu">
+                            IMU (Accelerometer, Gyroscope)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="mic">
+                        <label class="form-check-label" for="mic">
+                            Microphone
+                        </label>
+                    </div> -->
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="videoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">About The Project</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 m-1">
+                    <div class="card mx-5 mt-2">
+                        <video width="500.4" preload="metadata" poster="thumbnail.png" style="min-width: 100%;"
+                            controls>
+                            <source src="video.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="m-2 fs-6">
+                        <div class="card my-3 bg-warning-subtle">
+                            <button class="btn" data-bs-toggle="collapse" data-bs-target="#objectiveCard">
+                                <h1>Our Objectives</h1>
+                            </button>
+                            <div class="collapse" id="objectiveCard">
+                                <div class="card card-body m-2">
+                                    The current prototype aims to achieve the following objectives:
+                                    <list>
+                                        <ol>
+                                            <li>A device that monitors the ambient PM 2.5, PM 10, CO, NO<sub>2</sub>,
+                                                VOC,
+                                                and C<sub>2</sub>H<sub>5</sub>OH</li>
+                                            <li>A secondary sensing system that measures the AQI class of the ambient
+                                                AQI
+                                                using temperature, humidity, and meteorological and temporal features.
+                                            </li>
+                                            <li>A dashboard that displays the collected data using cloud
+                                                synchronization.
+                                            </li>
+                                            <li>A demo voice assistant that greets the user on startup, and periodically
+                                                speaks the current air quality.</li>
+                                        </ol>
+                                    </list>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card my-3 bg-danger-subtle">
+                            <button class="btn" data-bs-toggle="collapse" data-bs-target="#issues">
+                                <h1>Known Issues</h1>
+                            </button>
+                            <div class="collapse" id="issues">
+                                <div class="card card-body m-2">
+                                    The current prototype has a voice output module that draws high voltage from the
+                                    power supply. This causes the flow of execution to stop, due to the SD Card module
+                                    getting disconnected. We are working on fixing this issue.<br>Currently, when the
+                                    screen does not seem to update for a very long time, plugging the power supply out
+                                    and then plugging it back in solves the issue.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card my-3 bg-warning-subtle"><button class="btn" data-bs-toggle="collapse"
+                                data-bs-target="#futuregoals">
+                                <h1>Future Goals</h1>
+                            </button>
+                            <div class="collapse" id="futuregoals">
+                                <div class="card card-body m-2">
+                                    We have the following plans on our roadmap:
+                                    <list>
+                                        <ol>
+                                            <li>Using the secondary sensing mechanism to check whether the air pollutant
+                                                sensors in the device are alright, or have become faulty.</li>
+                                            <li>Integrating a noise pollution monitoring module.</li>
+                                            </li>Preparing a validation box to perform automated activity-based
+                                            validation and recalibration.</li>
+                                            <li>Developing a companion mobile application that provides personalized
+                                                health and route recommendations.</li>
+                                            <li>Making the device cloud agnostic using bluetooth technology instead of
+                                                cloud.</li>
+                                            <li>Making an interactive voice assistant with customizable replies, and
+                                                alert system.</li>
+                                        </ol>
+                                    </list>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card my-3 bg-warning-subtle">
+                            <button class="btn" data-bs-toggle="collapse" data-bs-target="#aqi">
+                                <h1>What is AQI</h1>
+                            </button>
+                            <div class="collapse" id="aqi">
+                                <div class="card card-body m-2">
+                                    An air quality index (AQI) is an indicator developed by government agencies to
+                                    communicate to the public how polluted the air currently is or how polluted it is
+                                    forecast to become. The AQI is calulated based on the concentration of ai
+                                    pollutants.
+                                    The AQI category is calculated from the table below, for each pollutant. Then, the
+                                    maximum AQI Category obtained is the resultant AQI category.
+                                    <table class="table">
+                                        <caption>AQI category, pollutants and health breakpoints
+                                        </caption>
+                                        <tbody>
+                                            <tr class="overflow-x-auto">
+                                                <th>AQI category (range)
+                                                </th>
+                                                <th>PM<sub>10</sub> (24hr)
+                                                </th>
+                                                <th>PM<sub>2.5</sub> (24hr)
+                                                </th>
+                                                <th>NO<sub>2</sub> (24hr)
+                                                </th>
+                                                <th>O<sub>3</sub> (8hr)
+                                                </th>
+                                                <th>CO (8hr)
+                                                </th>
+                                                <th>SO<sub>2</sub> (24hr)
+                                                </th>
+                                                <th>NH<sub>3</sub> (24hr)
+                                                </th>
+                                                <th>Pb (24hr)
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <td>Good (0–50)
+                                                </td>
+                                                <td>0–50
+                                                </td>
+                                                <td>0–30
+                                                </td>
+                                                <td>0–40
+                                                </td>
+                                                <td>0–50
+                                                </td>
+                                                <td>0–1.0
+                                                </td>
+                                                <td>0–40
+                                                </td>
+                                                <td>0–200
+                                                </td>
+                                                <td>0–0.5
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Satisfactory (51–100)
+                                                </td>
+                                                <td>51–100
+                                                </td>
+                                                <td>31–60
+                                                </td>
+                                                <td>41–80
+                                                </td>
+                                                <td>51–100
+                                                </td>
+                                                <td>1.1–2.0
+                                                </td>
+                                                <td>41–80
+                                                </td>
+                                                <td>201–400
+                                                </td>
+                                                <td>0.5–1.0
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Moderate (101–200)
+                                                </td>
+                                                <td>101–250
+                                                </td>
+                                                <td>61–90
+                                                </td>
+                                                <td>81–180
+                                                </td>
+                                                <td>101–168
+                                                </td>
+                                                <td>2.1–10
+                                                </td>
+                                                <td>81–380
+                                                </td>
+                                                <td>401–800
+                                                </td>
+                                                <td>1.1–2.0
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Poor (201–300)
+                                                </td>
+                                                <td>251–350
+                                                </td>
+                                                <td>91–120
+                                                </td>
+                                                <td>181–280
+                                                </td>
+                                                <td>169–208
+                                                </td>
+                                                <td>10–17
+                                                </td>
+                                                <td>381–800
+                                                </td>
+                                                <td>801–1200
+                                                </td>
+                                                <td>2.1–3.0
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Very Poor (301–400)
+                                                </td>
+                                                <td>351–430
+                                                </td>
+                                                <td>121–250
+                                                </td>
+                                                <td>281–400
+                                                </td>
+                                                <td>209–748
+                                                </td>
+                                                <td>17–34
+                                                </td>
+                                                <td>801–1600
+                                                </td>
+                                                <td>1200–1800
+                                                </td>
+                                                <td>3.1–3.5
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Severe (401–500)
+                                                </td>
+                                                <td>430+
+                                                </td>
+                                                <td>250+
+                                                </td>
+                                                <td>400+
+                                                </td>
+                                                <td>748+
+                                                </td>
+                                                <td>34+
+                                                </td>
+                                                <td>1600+
+                                                </td>
+                                                <td>1800+
+                                                </td>
+                                                <td>3.5+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card my-3 bg-warning-subtle">
+                            <button class="btn" data-bs-toggle="collapse" data-bs-target="#changelog">
+                                <h1>Changelogs</h1>
+                            </button>
+                            <div class="collapse" id="changelog">
+                                <div class="card card-body m-2">
+                                    <div class="row">
+                                        <div class="col-4"><img src="prototypes/2.png" width="100%"></div>
+                                        <div class="col-8">
+                                            <h2>V2.0 (May 2024)</h2>
+                                            <ol>
+                                                <li>
+                                                    Added multichannel gas sensor to detect concentration of
+                                                    NO<sub>2</sub>, VOC, CO and C<sub>2</sub>H<sub>5</sub>OH.
+                                                </li>
+                                                <li>
+                                                    Added hardware support for pdm microphone module
+                                                </li>
+                                                <li>
+                                                    Changed microcontroller unit to ESP32-S3-Pico (512 KB RAM, 16MB
+                                                    flash memory).
+                                                </li>
+                                                <li>
+                                                    Added power measurement hardware.
+                                                </li>
+                                                <li>
+                                                    Added voice output.
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-5">
+                                        <div class="col-8">
+                                            <h2>V1.0 (December 2023)</h2>
+                                            <ol>
+                                                <li>
+                                                    First prototype.
+                                                </li>
+                                                <li>
+                                                    Senses ambient dust particle concentration, humidity and temperature
+                                                </li>
+                                                <li>
+                                                    OLED screen to display the sensed values
+                                                </li>
+                                                <li>
+                                                    Cloud support for backing up the values and displaying the exposure
+                                                    history on a dashboard.
+                                                </li>
+                                                <li>
+                                                    Secondary sensing AI, to predict the AQI category on a scale of 1
+                                                    through 6, based on the local temperature, local humidity,
+                                                    web-crawled weather data, and temporal features.
+                                                </li>
+                                            </ol>
+                                        </div>
+                                        <div class="col-4"><img src="prototypes/1.png" width="100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <video width="478.4" height="258.4" preload="metadata" poster="ICDCN Presentation.png" controls>
+                        <source src="icdcn_vid_final.mp4" type="video/mp4">
+                    </video>
+                    <div class="m-2 fs-6">Can we create an <b>intelligent, personal air quality monitoring device,</b>
+                        which harnesses the power of ultra-low-powered micro-controllers to inform the users about the
+                        quality of air around them, using secondary sensing?
+                        <br>
+                        This work is presented by <br>
+                        Arko Datta (NIT Durgapur)<br>
+                        Aniruddha Pal (BCET Durgapur)<br>
+                        Ranbir Marandi (NIT Durgapur)<br>
+                        Nilanjan Chattaraj (NIT Durgapur)<br>
+                        Subrata Nandi (NIT Durgapur)<br>
+                        Sujoy Saha (NIT Durgapur)<br>
+                    </div> -->
+                </div>
+                <div class="modal-footer text-center fs-6">
+                    AI4ICPS IITKGP 2024 | DEMONSTRATION
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        let ctx = document.getElementById("pollution-chart").getContext("2d");
+        setInterval(function () {
+            if (document.getElementById("autorefresh").checked) {
+                restartUI(0)
+            }
+        }, 30000);
+
+        var isGas = false
+
+        var dataviewSpace = document.getElementById("dataview-space")
+        var currentPage = null
+        var DBState = null
+        var lat = null
+        var long = null
+        var currData = null
+        var annotationModal_init = false
+        var annotating = null
+        var tempAnnotating = null
+
+        var updateIsGas = function () {
+            isGas = !isGas;
+            console.log(isGas);
+            restartUI(0);
+        }
+
+        var locationOperation = function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    //lat = position.coords.latitude;
+                    //long = position.coords.longitude;
+                    lat = 12.9915;
+                    long = 80.2337;
+                    document.getElementById("livepoltitle").classList.add("d-none")
+                    document.getElementById("livepolrefresh").classList.remove("d-none")
+                    loadCurrentWeather();
+
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+        var loadCurrentWeather = async function () {
+            activityList = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat + "&longitude=" + long + "&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide", {
+                // Adding method type
+                method: "GET",
+                // Adding headers to the request
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }).then(response => response.json()).then(json => {
+                let pollution_data = json.current;
+                pollutantWidget = document.createElement("div")
+                pollutantWidget.classList.add("container-fluid")
+                pollutantWidget.id = "pollutantWidget"
+                let pm_10_conc = pollution_data['pm10']
+                let pm_10_aqi = 0;
+                if (pm_10_conc >= 0 && pm_10_conc <= 50) {
+                    pm_10_aqi = 1
+                } else if (pm_10_conc > 50 && pm_10_conc <= 100) {
+                    pm_10_aqi = 2
+                } else if (pm_10_conc > 100 && pm_10_conc <= 250) {
+                    pm_10_aqi = 3
+                } else if (pm_10_conc > 250 && pm_10_conc <= 350) {
+                    pm_10_aqi = 4
+                } else if (pm_10_conc > 350 && pm_10_conc <= 430) {
+                    pm_10_aqi = 5
+                } else if (pm_10_conc > 430) {
+                    pm_10_aqi = 6
+                }
+
+                let pm_2_5_conc = pollution_data['pm2_5']
+                let pm_2_5_aqi = 0;
+                if (pm_2_5_conc >= 0 && pm_2_5_conc <= 30) {
+                    pm_2_5_aqi = 1
+                } else if (pm_2_5_conc > 30 && pm_2_5_conc <= 60) {
+                    pm_2_5_aqi = 2
+                } else if (pm_2_5_conc > 60 && pm_2_5_conc <= 90) {
+                    pm_2_5_aqi = 3
+                } else if (pm_2_5_conc > 90 && pm_2_5_conc <= 120) {
+                    pm_2_5_aqi = 4
+                } else if (pm_2_5_conc > 120 && pm_2_5_conc <= 250) {
+                    pm_2_5_aqi = 5
+                } else if (pm_2_5_conc > 250) {
+                    pm_2_5_aqi = 6
+                }
+                let actualAQI = (pm_10_aqi > pm_2_5_aqi) ? pm_10_aqi : pm_2_5_aqi;
+                let actualAQIRow = document.createElement("span")
+                actualAQIRow.classList.add("fs-4");
+                actualAQIRow.classList.add("fw-bold");
+                actualAQIRow.classList.add("me-2");
+                actualAQIRow.innerHTML = "Live AQI:  " + actualAQI
+                pollutantWidget.appendChild(actualAQIRow)
+
+                Object.keys(pollution_data).forEach(key => {
+                    if (key != "time" && key != "interval") {
+                        let pollutantRow = document.createElement("span")
+                        pollutantRow.classList.add("badge")
+                        pollutantRow.classList.add("rounded-pill")
+                        pollutantRow.classList.add("text-bg-primary")
+                        pollutantRow.classList.add("mx-3")
+                        pollutantRow.classList.add("fs-6")
+                        pollutantRow.innerHTML = key + ": " + pollution_data[key]
+                        pollutantWidget.appendChild(pollutantRow)
+                    }
+                })
+                document.getElementById("livepollution").innerHTML = pollutantWidget.innerHTML
+            }
+            )
+        }
+        var loadEventState = async function () {
+            activityList = await fetch("https://ipollusense-default-rtdb.europe-west1.firebasedatabase.app/DBState.json", {
+                // Adding method type
+                method: "GET",
+                // Adding headers to the request
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }).then(response => response.json()).then(json => {
+                DBState = json
+                console.log(DBState)
+            }
+            )
+        }
+        var loadtotalpages = async function () {
+            pages = await fetch("https://ipollusense-default-rtdb.europe-west1.firebasedatabase.app/.json?orderBy=%22page%22&limitToFirst=1", {
+                // Adding method type
+                method: "GET",
+                // Adding headers to the request
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }).then(response => response.json()).then(json => {
+                currentPageKey = Object.keys(json)[0]
+                currentPage = json[currentPageKey]['page']
+            }
+            )
+        }
+
+        var createAnnotationModal = async function () {
+            // <div class="mt-5 fs-4">Extra Sensors (For current device)</div>
+            //         <div class="form-check">
+            //             <input class="form-check-input" type="checkbox" value="" id="imu">
+            //             <label class="form-check-label" for="imu">
+            //                 IMU (Accelerometer, Gyroscope)
+            //             </label>
+            //         </div>
+            //         <div class="form-check">
+            //             <input class="form-check-input" type="checkbox" value="" id="mic">
+            //             <label class="form-check-label" for="mic">
+            //                 Microphone
+            //             </label>
+            //         </div> -->
+            await loadEventState()
+            //Handling the selected values
+            annotating = DBState.Annotating
+            let activityDiv = document.getElementById('activity_div')
+            let locationDiv = document.getElementById('location_div')
+            let stateDiv = document.getElementById('state_div')
+            tempAnnotating = JSON.parse(JSON.stringify(annotating))
+            if (!annotationModal_init) {
+                annotationModal_init = true
+                //First we populate Activity Div
+                activityList = DBState.ActivityList
+                activityList.forEach(activity => {
+                    if (activity != "Idle") {
+                        row = document.createElement("div")
+                        row.classList.add("form-check")
+                        row.id = "row-activity-" + activity
+                        checkbox = document.createElement("input")
+                        checkbox.classList.add("form-check-input")
+                        checkbox.type = "checkbox"
+                        checkbox.value = ""
+                        checkbox.id = "chk-activity-" + activity
+                        checkbox.onchange = function () {
+                            if (this.checked) {
+                                tempAnnotating.Activity.push(activity)
+                                console.log(tempAnnotating.Activity)
+                            } else {
+                                const index = tempAnnotating.Activity.indexOf(activity);
+                                if (index > -1) { // only splice array when item is found
+                                    tempAnnotating.Activity.splice(index, 1); // 2nd parameter means remove one item only
+                                    console.log(tempAnnotating.Activity)
+                                }
+                            }
+                        }
+                        row.appendChild(checkbox)
+                        label = document.createElement("label")
+                        label.classList.add("form-check-label")
+                        label.setAttribute("for", checkbox.id)
+                        label.innerHTML = activity
+                        row.appendChild(label)
+                        activityDiv.appendChild(row)
+                    }
+                })
+
+                //Next we populate Location Div
+                locationList = DBState.Location
+                locationList.forEach(location => {
+                    row = document.createElement("div")
+                    row.classList.add("form-check")
+                    row.id = "row-location-" + location
+                    checkbox = document.createElement("input")
+                    checkbox.classList.add("form-check-input")
+                    checkbox.type = "radio"
+                    checkbox.value = ""
+                    checkbox.name = "locationlist"
+                    checkbox.id = "chk-location-" + location
+                    checkbox.onchange = function () {
+                        if (this.checked) {
+                            tempAnnotating.Location = [location]
+                            console.log(tempAnnotating.Location)
+                        } else {
+                            const index = tempAnnotating.Location.indexOf(location);
+                            if (index > -1) { // only splice array when item is found
+                                tempAnnotating.Location.splice(index, 1); // 2nd parameter means remove one item only
+                                console.log(tempAnnotating.Location)
+                            }
+                        }
+                    }
+                    row.appendChild(checkbox)
+                    label = document.createElement("label")
+                    label.classList.add("form-check-label")
+                    label.setAttribute("for", checkbox.id)
+                    label.innerHTML = location
+                    row.appendChild(label)
+                    locationDiv.appendChild(row)
+                })
+
+                //And lastly we populate State Div
+                stateList = DBState.State
+                stateList.forEach(state => {
+                    row = document.createElement("div")
+                    row.classList.add("form-check")
+                    row.id = "row-state-" + state
+                    checkbox = document.createElement("input")
+                    checkbox.classList.add("form-check-input")
+                    checkbox.type = "checkbox"
+                    checkbox.value = ""
+                    checkbox.id = "chk-state-" + state
+                    checkbox.onchange = function () {
+                        if (this.checked) {
+                            tempAnnotating.State.push(state)
+                            console.log(tempAnnotating.State)
+                        } else {
+                            const index = tempAnnotating.State.indexOf(state);
+                            if (index > -1) { // only splice array when item is found
+                                tempAnnotating.State.splice(index, 1); // 2nd parameter means remove one item only
+                                console.log(tempAnnotating.State)
+                            }
+                        }
+                    }
+                    row.appendChild(checkbox)
+                    label = document.createElement("label")
+                    label.classList.add("form-check-label")
+                    label.setAttribute("for", checkbox.id)
+                    label.innerHTML = state
+                    row.appendChild(label)
+                    stateDiv.appendChild(row)
+                })
+            }
+            //Handling the selected values
+            DBState.ActivityList.forEach(activity => {
+                console.log(activity)
+                console.log(document.getElementById("chk-activity-" + activity).checked)
+            })
+            annotating.Activity.forEach(activity => {
+                document.getElementById("chk-activity-" + activity).setAttribute("checked", true)
+            })
+            annotating.Location.forEach(location => {
+                document.getElementById("chk-location-" + location).setAttribute("checked", true)
+            })
+            annotating.State.forEach(state => {
+                document.getElementById("chk-state-" + state).setAttribute("checked", true)
+            })
+        }
+        var myChart = null
+        var loadgrid = async function () {
+            function sort_by_key(array, key) {
+                return array.sort(function (a, b) {
+                    var x = a[key]; var y = b[key];
+                    return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+                });
+            }
+            data = await fetch("https://ipollusense-default-rtdb.europe-west1.firebasedatabase.app/.json?orderBy=%22page%22&startAt=" + currentPage + "&endAt=" + currentPage, {
+                // Adding method type
+                method: "GET",
+                // Adding headers to the request
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }).then(response => response.json()).then(json => {
+                pageData = []
+                Object.keys(json).forEach(function (key) {
+                    if (key != "a" && key != "DBState") {
+                        pageData.push(json[key])
+                    }
+                })
+                sort_by_key(pageData, "time")
+                pm_10 = []
+                pm_2_5 = []
+                co = []
+                no2 = []
+                voc = []
+                c2h5oh = []
+                time = []
+                pageData.forEach(function (rowdata) {
+
+                    pm_10.push(rowdata["pm100"])
+                    pm_2_5.push(rowdata["pm25"])
+                    if (Object.keys(rowdata).includes("co")) {
+                        co.push(rowdata["co"])
+                        no2.push(rowdata["no2"])
+                        voc.push(rowdata["voc"])
+                        c2h5oh.push(rowdata["alc"])
+                    }
+                    time.push(rowdata["time"])
+
+                    document.getElementById("loading").classList.add("d-none");
+                    card = document.createElement("div")
+                    card.id = "card-" + rowdata["indexing"]
+                    card.classList.add("card")
+                    card.classList.add("card-body")
+                    card.classList.add("container-fluid")
+                    if (Object.keys(rowdata).includes("co")) {
+                        card.classList.add("bg-info-subtle")
+                    } else {
+                        card.classList.add("bg-warning-subtle")
+                    }
+                    card.classList.add("shadow")
+                    card.classList.add("my-3")
+
+                    timeRow = document.createElement("div")
+                    timeRow.classList.add("row")
+
+                    timeDisplay = document.createElement("div")
+                    timeDisplay.classList.add("col-12")
+                    timeDisplay.classList.add("col-md-2")
+                    timeDisplay.classList.add("text-start")
+                    timeDisplay.classList.add("fs-6")
+                    timeDisplay.innerHTML = rowdata["time"]
+                    timeRow.appendChild(timeDisplay)
+                    realAQIRow = document.createElement("div")
+                    realAQIRow.classList.add("row")
+                    realAQIRow.classList.add("mb-5")
+
+                    realAQIDisplayCol1 = document.createElement("div")
+                    realAQIDisplayCol1.classList.add("col-12")
+                    realAQIDisplayCol1.classList.add("col-md-4")
+                    realAQIDisplayCol1.classList.add("fw-bold")
+                    realAQIDisplayCol1.classList.add("text-left")
+                    realAQIDisplayCol1.classList.add("fs-4")
+                    realAQIDisplayCol1.innerHTML = "Real AQI: " + rowdata["realAQI"]
+                    realAQIRow.appendChild(realAQIDisplayCol1)
+
+                    realAQIDisplayCol2 = document.createElement("div")
+                    realAQIDisplayCol2.classList.add("col-12")
+                    realAQIDisplayCol2.classList.add("col-md-2")
+                    realAQIDisplayCol2.classList.add("fw-bold")
+                    realAQIDisplayCol2.classList.add("text-left")
+                    realAQIDisplayCol2.innerHTML = "<span class=\"text-secondary\">PM 2.5</span><br>" + rowdata["pm25"] + " μg/m<sup>3</sup>"
+                    realAQIRow.appendChild(realAQIDisplayCol2)
+
+
+                    gasRow = document.createElement("div")
+                    gasRow.classList.add("row")
+
+                    gasDisplayCol1 = document.createElement("div")
+                    gasDisplayCol1.classList.add("col-12")
+                    gasDisplayCol1.classList.add("col-md-4")
+                    gasDisplayCol1.classList.add("fw-bold")
+                    gasDisplayCol1.classList.add("text-left")
+                    gasDisplayCol1.classList.add("fs-4")
+                    gasDisplayCol1.innerHTML = " "
+                    gasRow.appendChild(gasDisplayCol1)
+
+                    gasDisplayCol2 = document.createElement("div")
+                    gasDisplayCol2.classList.add("col-12")
+                    gasDisplayCol2.classList.add("col-md-2")
+                    gasDisplayCol2.classList.add("fw-bold")
+                    gasDisplayCol2.classList.add("text-left")
+                    gasDisplayCol2.innerHTML = "<span class=\"text-secondary\">CO</span><br> " + rowdata["co"] + " ppm"
+                    gasRow.appendChild(gasDisplayCol2)
+
+                    gasDisplayCol3 = document.createElement("div")
+                    gasDisplayCol3.classList.add("col-12")
+                    gasDisplayCol3.classList.add("col-md-2")
+                    gasDisplayCol3.classList.add("fw-bold")
+                    gasDisplayCol3.classList.add("text-left")
+                    gasDisplayCol3.innerHTML = "<span class=\"text-secondary\">NO2</span><br> " + rowdata["no2"] + " ppm"
+                    gasRow.appendChild(gasDisplayCol3)
+
+                    gasDisplayCol4 = document.createElement("div")
+                    gasDisplayCol4.classList.add("col-12")
+                    gasDisplayCol4.classList.add("col-md-2")
+                    gasDisplayCol4.classList.add("fw-bold")
+                    gasDisplayCol4.classList.add("text-left")
+                    gasDisplayCol4.innerHTML = "<span class=\"text-secondary\">VOC</span><br> " + rowdata["voc"] + " ppm"
+                    gasRow.appendChild(gasDisplayCol4)
+
+                    gasDisplayCol5 = document.createElement("div")
+                    gasDisplayCol5.classList.add("col-12")
+                    gasDisplayCol5.classList.add("col-md-2")
+                    gasDisplayCol5.classList.add("fw-bold")
+                    gasDisplayCol5.classList.add("text-left")
+                    gasDisplayCol5.innerHTML = "<span class=\"text-secondary\">C2H5OH</span><br> " + rowdata["alc"] + " ppm"
+                    gasRow.appendChild(gasDisplayCol5)
+
+
+
+                    realAQIDisplayCol3 = document.createElement("div")
+                    realAQIDisplayCol3.classList.add("col-12")
+                    realAQIDisplayCol3.classList.add("col-md-2")
+                    realAQIDisplayCol3.classList.add("fw-bold")
+                    realAQIDisplayCol3.classList.add("text-left")
+                    realAQIDisplayCol3.innerHTML = "<span class=\"text-secondary\">PM 10.0</span><br> " + rowdata["pm100"] + " μg/m<sup>3</sup>"
+                    realAQIRow.appendChild(realAQIDisplayCol3)
+
+                    predictedAQIRow = document.createElement("div")
+                    predictedAQIRow.classList.add("row")
+                    predictedAQIRow.classList.add("mt-3")
+
+                    predictedAQIDisplay = document.createElement("div")
+                    predictedAQIDisplay.classList.add("col-6")
+                    predictedAQIDisplay.classList.add("fw-bold")
+                    predictedAQIDisplay.classList.add("text-start")
+                    predictedAQIDisplay.classList.add("fs-4")
+                    predictedAQIDisplay.innerHTML = "Predicted AQI (Dust):  " + rowdata["predictedAQI"]
+
+                    predictedAQICODisplay = document.createElement("div")
+                    predictedAQICODisplay.classList.add("col-6")
+                    predictedAQICODisplay.classList.add("fw-bold")
+                    predictedAQICODisplay.classList.add("text-start")
+                    predictedAQICODisplay.classList.add("fs-4")
+                    predictedAQICODisplay.innerHTML = "Predicted AQI (CO):  " + rowdata["predictedAQICO"]
+                    predictedAQIRow.appendChild(predictedAQIDisplay)
+                    predictedAQIRow.appendChild(predictedAQICODisplay)
+
+                    weatherDetailsRow = document.createElement("div")
+                    weatherDetailsRow.classList.add("row")
+                    weatherDetailsRow.classList.add("my-2")
+
+                    weatherDetailsCol1 = document.createElement("div")
+                    weatherDetailsCol1.classList.add("col-12")
+                    weatherDetailsCol1.classList.add("col-md-2")
+                    weatherDetailsCol1.classList.add("fw-bold")
+                    weatherDetailsCol1.innerHTML = "Other Data"
+                    weatherDetailsRow.appendChild(weatherDetailsCol1)
+
+                    weatherDetailsCol2 = document.createElement("div")
+                    weatherDetailsCol2.classList.add("col-12")
+                    weatherDetailsCol2.classList.add("col-md-2")
+                    weatherDetailsCol2.innerHTML = "Temperature: " + rowdata["temperature"] + "°C"
+                    weatherDetailsRow.appendChild(weatherDetailsCol2)
+
+                    weatherDetailsCol3 = document.createElement("div")
+                    weatherDetailsCol3.classList.add("col-12")
+                    weatherDetailsCol3.classList.add("col-md-8")
+                    weatherDetailsCol3.innerHTML = "Humidity: " + rowdata["humidity"] + "%"
+                    weatherDetailsRow.appendChild(weatherDetailsCol3)
+
+                    weatherDetailsRow2 = document.createElement("div")
+                    weatherDetailsRow2.classList.add("row")
+                    weatherDetailsRow2.classList.add("mt-2")
+
+                    weatherDetailsCol2_1 = document.createElement("div")
+                    weatherDetailsCol2_1.classList.add("col-12")
+                    weatherDetailsCol2_1.classList.add("col-md-2")
+                    weatherDetailsCol2_1.classList.add("fw-bold")
+                    weatherDetailsCol2_1.innerHTML = "Weather Data"
+                    weatherDetailsRow2.appendChild(weatherDetailsCol2_1)
+
+                    weatherDetailsCol2_2 = document.createElement("div")
+                    weatherDetailsCol2_2.classList.add("col-12")
+                    weatherDetailsCol2_2.classList.add("col-md-2")
+                    weatherDetailsCol2_2.innerHTML = "Feels Like: " + rowdata["feels_like"] + "°C"
+                    weatherDetailsRow2.appendChild(weatherDetailsCol2_2)
+
+                    weatherDetailsCol2_3 = document.createElement("div")
+                    weatherDetailsCol2_3.classList.add("col-12")
+                    weatherDetailsCol2_3.classList.add("col-md-2")
+                    weatherDetailsCol2_3.innerHTML = "Minimum Temperature: " + rowdata["temp_min"] + "°C"
+                    weatherDetailsRow2.appendChild(weatherDetailsCol2_3)
+
+                    weatherDetailsCol2_4 = document.createElement("div")
+                    weatherDetailsCol2_4.classList.add("col-12")
+                    weatherDetailsCol2_4.classList.add("col-md-2")
+                    weatherDetailsCol2_4.innerHTML = "Maximum Temperature: " + rowdata["temp_max"] + "°C"
+                    weatherDetailsRow2.appendChild(weatherDetailsCol2_4)
+
+                    weatherDetailsCol2_5 = document.createElement("div")
+                    weatherDetailsCol2_5.classList.add("col-12")
+                    weatherDetailsCol2_5.classList.add("col-md-2")
+                    weatherDetailsCol2_5.innerHTML = "Pressure: " + rowdata["pressure"] + "hPa"
+                    weatherDetailsRow2.appendChild(weatherDetailsCol2_5)
+
+                    weatherDetailsCol2_6 = document.createElement("div")
+                    weatherDetailsCol2_6.classList.add("col-12")
+                    weatherDetailsCol2_6.classList.add("col-md-2")
+                    weatherDetailsCol2_6.innerHTML = "Wind Speed: " + rowdata["wind_speed"] + "km/h"
+                    weatherDetailsRow2.appendChild(weatherDetailsCol2_6)
+
+                    weatherDetailsRow3 = document.createElement("div")
+                    weatherDetailsRow3.classList.add("row")
+
+                    weatherDetailsCol3_0 = document.createElement("div")
+                    weatherDetailsCol3_0.classList.add("col-12")
+                    weatherDetailsCol3_0.classList.add("col-md-2")
+                    weatherDetailsCol3_0.innerHTML = ""
+                    weatherDetailsRow3.appendChild(weatherDetailsCol3_0)
+
+                    weatherDetailsCol3_1 = document.createElement("div")
+                    weatherDetailsCol3_1.classList.add("col-12")
+                    weatherDetailsCol3_1.classList.add("col-md-2")
+                    weatherDetailsCol3_1.innerHTML = "Wind Degree: " + rowdata["wind_deg"] + "°"
+                    weatherDetailsRow3.appendChild(weatherDetailsCol3_1)
+
+                    weatherDetailsCol3_2 = document.createElement("div")
+                    weatherDetailsCol3_2.classList.add("col-12")
+                    weatherDetailsCol3_2.classList.add("col-md-2")
+                    weatherDetailsCol3_2.innerHTML = "Cloud Coverage: " + rowdata["clouds_all"] + "%"
+                    weatherDetailsRow3.appendChild(weatherDetailsCol3_2)
+
+                    weatherDetailsCol3_3 = document.createElement("div")
+                    weatherDetailsCol3_3.classList.add("col-12")
+                    weatherDetailsCol3_3.classList.add("col-md-2")
+                    weatherDetailsCol3_3.innerHTML = "Weather: " + rowdata["weather"]
+
+                    weatherDetailsRow3.appendChild(weatherDetailsCol3_3)
+
+                    weatherDetailsCol3_4 = document.createElement("div")
+                    weatherDetailsCol3_4.classList.add("col-12")
+                    weatherDetailsCol3_4.classList.add("col-md-2")
+                    weatherDetailsCol3_4.innerHTML = "Rain: " + rowdata["rain"]
+
+                    weatherDetailsRow3.appendChild(weatherDetailsCol3_4)
+
+                    timeDataRow = document.createElement("div")
+                    timeDataRow.classList.add("row")
+                    timeDataRow.classList.add("my-2")
+
+                    timeDataRowTitle = document.createElement("div")
+                    timeDataRowTitle.classList.add("col-12")
+                    timeDataRowTitle.classList.add("col-md-2")
+                    timeDataRowTitle.classList.add("fw-bold")
+                    timeDataRowTitle.innerHTML = "Time Data"
+                    timeDataRow.appendChild(timeDataRowTitle)
+
+                    hourCol = document.createElement("div")
+                    hourCol.classList.add("col-12")
+                    hourCol.classList.add("col-md-2")
+                    hourCol.innerHTML = "Hour: " + rowdata["hour"]
+                    timeDataRow.appendChild(hourCol)
+
+                    timeclusterCol = document.createElement("div")
+                    timeclusterCol.classList.add("col-12")
+                    timeclusterCol.classList.add("col-md-2")
+                    timeclusterCol.innerHTML = "Time Cluster: " + rowdata['timecluster']
+                    timeDataRow.appendChild(timeclusterCol)
+
+                    monthCol = document.createElement("div")
+                    monthCol.classList.add("col-12")
+                    monthCol.classList.add("col-md-2")
+                    monthCol.innerHTML = "Month: " + rowdata['month']
+                    timeDataRow.appendChild(monthCol)
+
+                    seasonCol = document.createElement("div")
+                    seasonCol.classList.add("col-12")
+                    seasonCol.classList.add("col-md-2")
+                    seasonCol.innerHTML = "Season: " + rowdata['season']
+                    timeDataRow.appendChild(seasonCol)
+
+                    dowCol = document.createElement("div")
+                    dowCol.classList.add("col-12")
+                    dowCol.classList.add("col-md-2")
+                    dowCol.innerHTML = "Day of week: " + rowdata['dayofweek']
+                    timeDataRow.appendChild(dowCol)
+
+                    card.appendChild(timeRow)
+                    card.appendChild(document.createElement("hr"))
+                    card.appendChild(realAQIRow)
+
+                    card.appendChild(gasRow)
+
+
+
+                    card.appendChild(document.createElement("hr"))
+                    card.appendChild(predictedAQIRow)
+
+                    card.appendChild(document.createElement("hr"))
+                    card.appendChild(weatherDetailsRow)
+
+                    card.appendChild(weatherDetailsRow2)
+                    card.appendChild(weatherDetailsRow3)
+                    card.appendChild(document.createElement("hr"))
+                    card.appendChild(timeDataRow)
+
+                    document.getElementById("dataview-space").appendChild(card)
+                }
+                )
+                if (isGas == false) {
+                    if (myChart == null) {
+                        myChart = new Chart(ctx, {
+                            type: "line",
+                            data: {
+                                labels: time.reverse(),
+                                datasets: [
+                                    {
+                                        label: "PM 2.5",
+                                        data: pm_2_5.reverse(),
+                                        backgroundColor: "rgba(153,205,1,0.6)",
+                                    },
+                                    {
+                                        label: "PM 10.0",
+                                        data: pm_10.reverse(),
+                                        backgroundColor: "rgba(155,153,10,0.6)",
+                                    },
+                                ],
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Concentration (μg/m^3)'
+                                        }
+                                    }],
+                                    xAxes: [{
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'Timestamp'
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        myChart.data.labels = time.reverse()
+                        myChart.data.datasets = [
+                            {
+                                label: "PM 2.5",
+                                data: pm_2_5.reverse(),
+                                backgroundColor: "rgba(153,205,1,0.6)",
+                            },
+                            {
+                                label: "PM 10.0",
+                                data: pm_10.reverse(),
+                                backgroundColor: "rgba(155,153,10,0.6)",
+                            },
+                        ]
+                        myChart.options.scales.yAxes[0].scaleLabel.labelString = "Concentration (μg/m^3)"
+                        myChart.update('none')
+                    }
+                }
+                else {
+                    if (myChart == null) {
+                        myChart = new Chart(ctx, {
+                            type: "line",
+                            data: {
+                                labels: time.reverse(),
+                                datasets: [
+                                    {
+                                        label: "CO",
+                                        data: co.reverse(),
+                                        backgroundColor: "rgba(89, 203, 231, 0.47)",
+                                    },
+                                    {
+                                        label: "NO2",
+                                        data: no2.reverse(),
+                                        backgroundColor: "rgba(190, 126, 207, 0.34)",
+                                    },
+                                    {
+                                        label: "VOC",
+                                        data: voc.reverse(),
+                                        backgroundColor: "rgba(128, 207, 126, 0.34)",
+                                    },
+                                    {
+                                        label: "C2H5OH",
+                                        data: c2h5oh.reverse(),
+                                        backgroundColor: "rgba(255, 181, 0, 0.34)",
+                                    },
+                                ],
+                            },
+                            scales: {
+                                yAxes: [{
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Concentration (ppm)'
+                                    }
+                                }],
+                                xAxes: [{
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Timestamp'
+                                    }
+                                }]
+                            }
+                        });
+                    }
+                    else {
+                        myChart.data.labels = time.reverse()
+                        myChart.data.datasets = [
+                            {
+                                label: "CO",
+                                data: co.reverse(),
+                                backgroundColor: "rgba(89, 203, 231, 0.47)",
+                            },
+                            {
+                                label: "NO2",
+                                data: no2.reverse(),
+                                backgroundColor: "rgba(190, 126, 207, 0.34)",
+                            },
+                            {
+                                label: "VOC",
+                                data: voc.reverse(),
+                                backgroundColor: "rgba(128, 207, 126, 0.34)",
+                            },
+                            {
+                                label: "C2H5OH",
+                                data: c2h5oh.reverse(),
+                                backgroundColor: "rgba(255, 181, 0, 0.34)",
+                            },
+                        ]
+                        myChart.options.scales.yAxes[0].scaleLabel.labelString = "Concentration (ppm)"
+                        myChart.update('none')
+                    }
+
+                }
+                
+                // let moreButton = document.getElementById("moreButton")
+                // moreButton.innerHTML = "<i class='fa fa-arrow-right'></i>"
+                // moreButton.classList.add("btn")
+                // moreButton.classList.add("btn-primary")
+                // moreButton.classList.add("float-end")
+
+                if (currentPage != -1) {
+                    currentPage = currentPage + 1
+                }
+                else {
+                    document.getElementById("dataview-space").removeChild(moreButton)
+                }
+                moreButton.onclick = function () {
+                    restartUI(currentPage)
+                }
+            }
+            )
+        }
+        window.onload = async function () {
+            restartUI(0)
+        }
+        restartUI = async function (triggerPageLoad) {
+            document.getElementById('loading').classList.remove('d-none');
+            document.getElementById('dataview-space').innerHTML = null;
+            if (triggerPageLoad == 0) {
+                await this.loadEventState();
+                await this.loadtotalpages();
+            }
+            await this.loadgrid();
+        }
+
+    </script>
+</body>
+
+</html>
