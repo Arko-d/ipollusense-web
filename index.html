@@ -81,7 +81,7 @@
             </div>
         </div>
         <div class="container-fluid d-flex pt-3 pb-0 justify-content-center">Made with <span><i class="mx-2 fa fa-heart"
-                    style="color: coral;"></i></span> by NIT Durgapur</div>
+                    style="color: coral;"></i></span> by Systems Research Lab, NIT Durgapur</div>
     </div>
     </div>
     </div>
@@ -881,7 +881,6 @@
                     predictedAQIDisplay.classList.add("fw-bold")
                     predictedAQIDisplay.classList.add("text-start")
                     predictedAQIDisplay.classList.add("fs-4")
-                    console.log(Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])))
                     if (Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])) > 1) {
                         predictedAQIDisplay.classList.add("text-danger")
                     }
