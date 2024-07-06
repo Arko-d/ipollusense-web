@@ -778,7 +778,6 @@
                     card.classList.add("card")
                     card.classList.add("card-body")
                     card.classList.add("container-fluid")
-                    console.log(Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])))
                     if (Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])) <= 1) {
                         card.classList.add("bg-info-subtle")
                     } else {
@@ -882,7 +881,8 @@
                     predictedAQIDisplay.classList.add("fw-bold")
                     predictedAQIDisplay.classList.add("text-start")
                     predictedAQIDisplay.classList.add("fs-4")
-                    if (Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])) <= 1) {
+                    console.log(Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])))
+                    if (Math.abs(parseInt(rowdata["realAQI"]) - parseInt(rowdata["predictedAQI"])) > 1) {
                         predictedAQIDisplay.classList.add("text-danger")
                     }
                     predictedAQIDisplay.innerHTML = "Predicted AQI (Dust):  " + rowdata["predictedAQI"]
