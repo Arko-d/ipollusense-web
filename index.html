@@ -30,7 +30,7 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
 
-    <div class="mb-5 py-2 text-center width-100 fs-1 fw-bold sticky-top shadow text-white"
+    <div class="py-2 text-center width-100 fs-1 fw-bold sticky-top shadow text-white"
         style="background-color: rgb(38, 134, 167);">
         <span class="float-start ms-2"><img src="cllg_logo.png" width="50vw" height="50vw"></span>
         iPolluSense<span><button class="btn" onclick="restartUI(0);"><i
@@ -44,14 +44,14 @@
             <span><button class="btn" onclick="console.log('TBD')"><i class="fa fa-stop"></i></button></span>
         </div> -->
     </div>
-    <!-- <div class="m-0 py-2 card card-body bg-success-subtle mb-4">
+    <div class="m-0 py-2 card card-body bg-success-subtle mb-4">
         <div class="container-fluid ps-0 py-2"><span class="fs-4 fw-bold" id="livepoltitle">Current Pollution Station
                 Data</span><span><button class="btn d-none" onclick="locationOperation()" id="livepolrefresh">
                     <i class="fa fa-refresh"></i></button></span><span id="livepollution" class="container-fluid">
                 <span onclick="locationOperation()" class="my-0 justify-content-center btn btn-secondary">Fetch Data
                 </span>
             </span>
-        </div> -->
+        </div>
 
 
 
@@ -81,7 +81,7 @@
             </div>
         </div>
         <div class="container-fluid d-flex pt-3 pb-0 justify-content-center">Made with <span><i class="mx-2 fa fa-heart"
-                    style="color: coral;"></i></span> by Systems Research Lab, NIT Durgapur</div>
+                    style="color: coral;"></i></span> by Team Pollusense @ Systems Research Lab, NIT Durgapur</div>
     </div>
     </div>
     </div>
@@ -446,7 +446,7 @@
                     </div> -->
                 </div>
                 <div class="modal-footer text-center fs-6">
-                    AI4ICPS IITKGP 2024 | DEMONSTRATION
+                    ICMNSS 2024 | DEMONSTRATION
                 </div>
             </div>
         </div>
@@ -485,8 +485,8 @@
                 navigator.geolocation.getCurrentPosition(position => {
                     //lat = position.coords.latitude;
                     //long = position.coords.longitude;
-                    lat = 12.9915;
-                    long = 80.2337;
+                    lat = 13.0144;
+                    long = 77.5659;
                     document.getElementById("livepoltitle").classList.add("d-none")
                     document.getElementById("livepolrefresh").classList.remove("d-none")
                     loadCurrentWeather();
