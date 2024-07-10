@@ -489,20 +489,12 @@
         }
 
         var locationOperation = function () {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    //lat = position.coords.latitude;
-                    //long = position.coords.longitude;
-                    lat = 13.0144;
-                    long = 77.5659;
-                    document.getElementById("livepoltitle").classList.add("d-none")
-                    document.getElementById("livepolrefresh").classList.remove("d-none")
-                    loadCurrentWeather();
 
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
+            lat = 13.0144;
+            long = 77.5659;
+            document.getElementById("livepoltitle").classList.add("d-none")
+            document.getElementById("livepolrefresh").classList.remove("d-none")
+            loadCurrentWeather();
         }
         var loadCurrentWeather = async function () {
             activityList = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + lat + "&longitude=" + long + "&current=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide", {
@@ -563,6 +555,7 @@
                         pollutantRow.classList.add("rounded-pill")
                         pollutantRow.classList.add("text-bg-primary")
                         pollutantRow.classList.add("mx-3")
+                        pollutantRow.classList.add("my-2")
                         pollutantRow.classList.add("fs-6")
                         pollutantRow.innerHTML = key + ": " + pollution_data[key]
                         pollutantWidget.appendChild(pollutantRow)
@@ -1153,7 +1146,7 @@
                                 yAxes: [{
                                     scaleLabel: {
                                         display: true,
-                                        labelString: 'Concentration (ppm)'
+                                        labelString: 'Concentration'
                                     }
                                 }],
                                 xAxes: [{
@@ -1189,7 +1182,7 @@
                                 backgroundColor: "rgba(255, 181, 0, 0.34)",
                             },
                         ]
-                        myChart.options.scales.yAxes[0].scaleLabel.labelString = "Concentration (ppm)"
+                        myChart.options.scales.yAxes[0].scaleLabel.labelString = "Concentration"
                         myChart.update('none')
                     }
 
